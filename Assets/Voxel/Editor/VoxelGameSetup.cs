@@ -95,7 +95,7 @@ public class VoxelGameSetup : EditorWindow
     void CreatePlayer()
     {
         // 既存のPlayerを探す
-        var existingPlayer = FindObjectOfType<PlayerController>();
+        var existingPlayer = FindAnyObjectByType<PlayerController>();
         if (existingPlayer != null)
         {
             Debug.Log("Player already exists, skipping...");
@@ -134,7 +134,7 @@ public class VoxelGameSetup : EditorWindow
     void CreateVoxelWorld()
     {
         // 既存のVoxelWorldを探す
-        var existingWorld = FindObjectOfType<VoxelWorld>();
+        var existingWorld = FindAnyObjectByType<VoxelWorld>();
         if (existingWorld != null)
         {
             Debug.Log("VoxelWorld already exists, skipping...");
@@ -165,7 +165,7 @@ public class VoxelGameSetup : EditorWindow
     void CreateResourceSystems()
     {
         // ResourceInventory
-        var existingInventory = FindObjectOfType<ResourceInventory>();
+        var existingInventory = FindAnyObjectByType<ResourceInventory>();
         if (existingInventory == null)
         {
             GameObject resourceInventory = new GameObject("ResourceInventory");
@@ -176,7 +176,7 @@ public class VoxelGameSetup : EditorWindow
         }
         
         // ResourceDropper
-        var existingDropper = FindObjectOfType<ResourceDropper>();
+        var existingDropper = FindAnyObjectByType<ResourceDropper>();
         if (existingDropper == null)
         {
             GameObject resourceDropper = new GameObject("ResourceDropper");
@@ -187,7 +187,7 @@ public class VoxelGameSetup : EditorWindow
     
     void CreateConstructionManager()
     {
-        var existingManager = FindObjectOfType<ConstructionManager>();
+        var existingManager = FindAnyObjectByType<ConstructionManager>();
         if (existingManager != null)
         {
             Debug.Log("ConstructionManager already exists, skipping...");
@@ -207,7 +207,7 @@ public class VoxelGameSetup : EditorWindow
     void CreateTimeAndTaskSystems()
     {
         // TimeSystem
-        var existingTime = FindObjectOfType<TimeSystem>();
+        var existingTime = FindAnyObjectByType<TimeSystem>();
         if (existingTime == null)
         {
             GameObject timeSystem = new GameObject("TimeSystem");
@@ -221,7 +221,7 @@ public class VoxelGameSetup : EditorWindow
         }
         
         // DailyTaskManager
-        var existingTasks = FindObjectOfType<DailyTaskManager>();
+        var existingTasks = FindAnyObjectByType<DailyTaskManager>();
         if (existingTasks == null)
         {
             GameObject taskManager = new GameObject("DailyTaskManager");
@@ -234,7 +234,7 @@ public class VoxelGameSetup : EditorWindow
     
     void CreateGameUI()
     {
-        var existingUI = FindObjectOfType<VoxelGameUI>();
+        var existingUI = FindAnyObjectByType<VoxelGameUI>();
         if (existingUI != null)
         {
             Debug.Log("VoxelGameUI already exists, skipping...");
@@ -337,14 +337,14 @@ public class VoxelGameSetup : EditorWindow
         Debug.Log("Setting up references between components...");
         
         // 主要コンポーネントを取得
-        var player = FindObjectOfType<PlayerController>();
-        var voxelBrush = FindObjectOfType<VoxelBrush>();
-        var voxelWorld = FindObjectOfType<VoxelWorld>();
-        var resourceInventory = FindObjectOfType<ResourceInventory>();
-        var resourceDropper = FindObjectOfType<ResourceDropper>();
-        var constructionManager = FindObjectOfType<ConstructionManager>();
-        var taskManager = FindObjectOfType<DailyTaskManager>();
-        var gameUI = FindObjectOfType<VoxelGameUI>();
+        var player = FindAnyObjectByType<PlayerController>();
+        var voxelBrush = FindAnyObjectByType<VoxelBrush>();
+        var voxelWorld = FindAnyObjectByType<VoxelWorld>();
+        var resourceInventory = FindAnyObjectByType<ResourceInventory>();
+        var resourceDropper = FindAnyObjectByType<ResourceDropper>();
+        var constructionManager = FindAnyObjectByType<ConstructionManager>();
+        var taskManager = FindAnyObjectByType<DailyTaskManager>();
+        var gameUI = FindAnyObjectByType<VoxelGameUI>();
         var materialPalette = AssetDatabase.LoadAssetAtPath<MaterialPalette>("Assets/Voxel/VoxelMaterialPalette.asset");
         
         // VoxelBrush参照設定
@@ -477,7 +477,7 @@ public class VoxelGameSetup : EditorWindow
             
             foreach (var type in typesToClean)
             {
-                var objects = FindObjectsOfType(type) as Component[];
+                var objects = FindObjectsByType(type, FindObjectsSortMode.None) as Component[];
                 foreach (var obj in objects)
                 {
                     DestroyImmediate(obj.gameObject);
