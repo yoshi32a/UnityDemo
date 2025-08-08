@@ -39,7 +39,8 @@ public class VoxelWorld : MonoBehaviour
         if (useProceduralTerrain)
         {
             // プロシージャル地形生成
-            foreach (var kv in chunks)
+            var chunkList = new List<KeyValuePair<int3, VoxelChunk>>(chunks);
+            foreach (var kv in chunkList)
             {
                 var ch = kv.Value;
                 TerrainGenerator.GenerateChunk(ch, terrainSettings, worldSeed);
@@ -47,19 +48,26 @@ public class VoxelWorld : MonoBehaviour
             }
             
             // 構造物（木など）を生成
+            var surfaceChunks = new List<KeyValuePair<int3, VoxelChunk>>();
             foreach (var kv in chunks)
             {
                 if (kv.Key.y == 0) // 地表レベルのチャンクのみ
                 {
-                    var biome = DetermineBiomeForChunk(kv.Key);
-                    TerrainGenerator.GenerateStructures(this, kv.Key, biome, worldSeed);
+                    surfaceChunks.Add(kv);
                 }
+            }
+            
+            foreach (var kv in surfaceChunks)
+            {
+                var biome = DetermineBiomeForChunk(kv.Key);
+                TerrainGenerator.GenerateStructures(this, kv.Key, biome, worldSeed);
             }
         }
         else
         {
             // 従来のフラット地形生成
-            foreach (var kv in chunks)
+            var chunkList = new List<KeyValuePair<int3, VoxelChunk>>(chunks);
+            foreach (var kv in chunkList)
             {
                 var ch = kv.Value;
                 var n = VoxelConst.ChunkSize;
