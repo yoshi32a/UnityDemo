@@ -167,7 +167,10 @@ public class VoxelGameUIToolkit : MonoBehaviour
             testLabel.style.color = Color.yellow;
             testLabel.style.fontSize = 30;
             testLabel.style.backgroundColor = Color.blue;
-            testLabel.style.padding = 20;
+            testLabel.style.paddingTop = 20;
+            testLabel.style.paddingBottom = 20;
+            testLabel.style.paddingLeft = 20;
+            testLabel.style.paddingRight = 20;
             root.Add(testLabel);
             Debug.Log("VoxelGameUIToolkit: Direct test label added");
         }
