@@ -268,13 +268,13 @@ public class VoxelGameUIToolkit : MonoBehaviour
             var constructionItem = new VisualElement();
             constructionItem.AddToClassList("construction-item");
             
-            if (project.isActive)
+            if (project.isStarted && !project.isCompleted)
                 constructionItem.AddToClassList("active");
             
             var nameLabel = new Label(project.name);
             nameLabel.AddToClassList("construction-name");
             
-            var progressLabel = new Label($"{project.completionPercentage:F1}%");
+            var progressLabel = new Label($"{(project.GetOverallProgress() * 100):F1}%");
             progressLabel.AddToClassList("construction-progress");
             
             constructionItem.Add(nameLabel);
