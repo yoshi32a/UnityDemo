@@ -150,6 +150,13 @@ public class VoxelGameSetup : EditorWindow
         world.useProceduralTerrain = true;
         world.worldSeed = 12345;
         
+        // MatVoxelマテリアルを設定
+        var matVoxel = AssetDatabase.LoadAssetAtPath<Material>("Assets/Voxel/MatVoxel.mat");
+        if (matVoxel != null)
+        {
+            world.defaultMaterial = matVoxel;
+        }
+        
         // VoxelBrush作成
         GameObject voxelBrush = new GameObject("VoxelBrush");
         var brush = voxelBrush.AddComponent<VoxelBrush>();
