@@ -1,0 +1,50 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Voxel/UI/VoxelGameUI.uss?fileID=7433441132597879392&amp;guid=12345678901234567890123456789012&amp;type=3#VoxelGameUI" />
+    
+    <!-- メインUIコンテナ -->
+    <ui:VisualElement name="main-container" class="main-container">
+        
+        <!-- HUD Panel (上部) -->
+        <ui:VisualElement name="hud-panel" class="hud-panel">
+            <ui:Label name="time-label" text="Day 1, 06:00" class="time-label" />
+            <ui:Label name="season-label" text="春" class="season-label" />
+            <ui:Label name="current-material-label" text="Material: 土" class="current-material-label" />
+        </ui:VisualElement>
+        
+        <!-- リソースインベントリ (左側) -->
+        <ui:VisualElement name="inventory-panel" class="inventory-panel">
+            <ui:Label name="inventory-title" text="リソース" class="panel-title" />
+            <ui:ScrollView name="inventory-scroll" class="inventory-scroll">
+                <ui:VisualElement name="inventory-items" class="inventory-items" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+        
+        <!-- デイリータスク (右側) -->
+        <ui:VisualElement name="tasks-panel" class="tasks-panel">
+            <ui:Label name="tasks-title" text="デイリータスク" class="panel-title" />
+            <ui:ScrollView name="tasks-scroll" class="tasks-scroll">
+                <ui:VisualElement name="tasks-items" class="tasks-items" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+        
+        <!-- 建設プロジェクト (下部) -->
+        <ui:VisualElement name="construction-panel" class="construction-panel">
+            <ui:Label name="construction-title" text="建設プロジェクト" class="panel-title" />
+            <ui:ScrollView name="construction-scroll" class="construction-scroll construction-horizontal">
+                <ui:VisualElement name="construction-items" class="construction-items" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+        
+        <!-- マテリアルパレット (下部中央) -->
+        <ui:VisualElement name="material-palette-panel" class="material-palette-panel">
+            <ui:Label name="palette-title" text="マテリアル" class="panel-title" />
+            <ui:VisualElement name="material-slots" class="material-slots" />
+        </ui:VisualElement>
+        
+        <!-- ヘルプテキスト (下部) -->
+        <ui:VisualElement name="help-panel" class="help-panel">
+            <ui:Label name="help-text" text="左クリック: ブロック設置 | 右クリック: ブロック削除 | 1-9: マテリアル変更" class="help-text" />
+        </ui:VisualElement>
+        
+    </ui:VisualElement>
+</ui:UXML>

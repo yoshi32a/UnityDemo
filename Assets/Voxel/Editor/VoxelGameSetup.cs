@@ -241,17 +241,17 @@ public class VoxelGameSetup : EditorWindow
     
     void CreateGameUI()
     {
-        var existingUI = FindAnyObjectByType<VoxelGameUI>();
+        var existingUI = FindAnyObjectByType<VoxelGameUIToolkit>();
         if (existingUI != null)
         {
-            Debug.Log("VoxelGameUI already exists, skipping...");
+            Debug.Log("VoxelGameUIToolkit already exists, skipping...");
             return;
         }
         
-        GameObject gameUI = new GameObject("VoxelGameUI");
-        var ui = gameUI.AddComponent<VoxelGameUI>();
+        GameObject gameUI = new GameObject("VoxelGameUIToolkit");
+        var ui = gameUI.AddComponent<VoxelGameUIToolkit>();
         
-        Debug.Log("VoxelGameUI created successfully");
+        Debug.Log("VoxelGameUIToolkit created successfully");
     }
     
     void CreateMaterialPalette()
@@ -351,7 +351,7 @@ public class VoxelGameSetup : EditorWindow
         var resourceDropper = FindAnyObjectByType<ResourceDropper>();
         var constructionManager = FindAnyObjectByType<ConstructionManager>();
         var taskManager = FindAnyObjectByType<DailyTaskManager>();
-        var gameUI = FindAnyObjectByType<VoxelGameUI>();
+        var gameUI = FindAnyObjectByType<VoxelGameUIToolkit>();
         var materialPalette = AssetDatabase.LoadAssetAtPath<MaterialPalette>("Assets/Voxel/VoxelMaterialPalette.asset");
         
         // VoxelBrush参照設定
@@ -387,6 +387,10 @@ public class VoxelGameSetup : EditorWindow
         {
             gameUI.voxelBrush = voxelBrush;
             gameUI.voxelWorld = voxelWorld;
+            gameUI.resourceInventory = resourceInventory;
+            gameUI.constructionManager = constructionManager;
+            gameUI.timeSystem = FindAnyObjectByType<TimeSystem>();
+            gameUI.taskManager = taskManager;
         }
         
         // ResourceDropperのリソース設定
@@ -479,7 +483,7 @@ public class VoxelGameSetup : EditorWindow
                 typeof(ConstructionManager),
                 typeof(TimeSystem),
                 typeof(DailyTaskManager),
-                typeof(VoxelGameUI)
+                typeof(VoxelGameUIToolkit)
             };
             
             foreach (var type in typesToClean)

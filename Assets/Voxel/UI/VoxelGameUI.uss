@@ -1,0 +1,290 @@
+/* メインコンテナ */
+.main-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    flex-direction: column;
+}
+
+/* HUDパネル (上部) */
+.hud-panel {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    height: 50px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.time-label, .season-label, .current-material-label {
+    color: white;
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+/* パネル共通スタイル */
+.panel-title {
+    color: white;
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* リソースインベントリ (左側) */
+.inventory-panel {
+    position: absolute;
+    left: 10px;
+    top: 80px;
+    width: 200px;
+    height: 300px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.inventory-scroll {
+    flex-grow: 1;
+}
+
+.inventory-items {
+    flex-direction: column;
+}
+
+/* リソースアイテム */
+.resource-item {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 3px;
+    margin-bottom: 2px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.resource-name {
+    color: white;
+    font-size: 12px;
+}
+
+.resource-amount {
+    color: #FFD700;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+/* デイリータスク (右側) */
+.tasks-panel {
+    position: absolute;
+    right: 10px;
+    top: 80px;
+    width: 250px;
+    height: 300px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.tasks-scroll {
+    flex-grow: 1;
+}
+
+.tasks-items {
+    flex-direction: column;
+}
+
+/* タスクアイテム */
+.task-item {
+    padding: 8px;
+    margin-bottom: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    border-left-width: 3px;
+}
+
+.task-item.completed {
+    border-left-color: #00FF00;
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+.task-item.in-progress {
+    border-left-color: #FFD700;
+    background-color: rgba(255, 215, 0, 0.2);
+}
+
+.task-name {
+    color: white;
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-bottom: 2px;
+}
+
+.task-description {
+    color: #CCCCCC;
+    font-size: 10px;
+    margin-bottom: 3px;
+}
+
+.task-progress {
+    color: #FFD700;
+    font-size: 10px;
+}
+
+/* 建設プロジェクト (下部) */
+.construction-panel {
+    position: absolute;
+    left: 220px;
+    right: 270px;
+    bottom: 120px;
+    height: 100px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.construction-scroll {
+    flex-grow: 1;
+}
+
+.construction-horizontal .unity-scroll-view__content-container {
+    flex-direction: row;
+}
+
+.construction-items {
+    flex-direction: row;
+}
+
+/* 建設プロジェクトアイテム */
+.construction-item {
+    width: 120px;
+    height: 60px;
+    margin-right: 10px;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.construction-item.active {
+    border-color: #00FF00;
+    border-width: 2px;
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+.construction-name {
+    color: white;
+    font-size: 11px;
+    -unity-font-style: bold;
+    margin-bottom: 2px;
+}
+
+.construction-progress {
+    color: #FFD700;
+    font-size: 10px;
+}
+
+/* マテリアルパレット (下部中央) */
+.material-palette-panel {
+    position: absolute;
+    left: 220px;
+    right: 270px;
+    bottom: 40px;
+    height: 70px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.material-slots {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* マテリアルスロット */
+.material-slot {
+    width: 40px;
+    height: 40px;
+    margin: 2px;
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.3);
+    align-items: center;
+    justify-content: center;
+}
+
+.material-slot.selected {
+    border-color: #FFD700;
+    border-width: 3px;
+}
+
+.material-slot:hover {
+    border-color: white;
+    border-width: 2px;
+}
+
+.material-number {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    color: white;
+    font-size: 10px;
+    -unity-font-style: bold;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    width: 16px;
+    height: 16px;
+    -unity-text-align: middle-center;
+}
+
+/* ヘルプパネル (最下部) */
+.help-panel {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    height: 25px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 3px;
+    padding: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.help-text {
+    color: #CCCCCC;
+    font-size: 11px;
+    -unity-text-align: middle-center;
+}
+
+/* スクロールビュー共通 */
+.unity-scroll-view {
+    flex-grow: 1;
+}
+
+.unity-scroll-view__content-viewport {
+    flex-grow: 1;
+}
+
+/* ボタン共通 */
+.unity-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    border-width: 1px;
+    border-radius: 3px;
+    color: white;
+}
+
+.unity-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.unity-button:active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
