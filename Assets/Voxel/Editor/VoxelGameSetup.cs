@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 public class VoxelGameSetup : EditorWindow
 {
@@ -250,12 +251,13 @@ public class VoxelGameSetup : EditorWindow
         
         GameObject gameUI = new GameObject("VoxelGameUIToolkit");
         var ui = gameUI.AddComponent<VoxelGameUIToolkit>();
+        var uiDocument = gameUI.GetComponent<UIDocument>();
         
         // PanelSettingを設定
         var panelSetting = AssetDatabase.LoadAssetAtPath<PanelSettings>("Assets/Voxel/UI/VoxelPanelSetting.asset");
         if (panelSetting != null)
         {
-            ui.panelSettings = panelSetting;
+            uiDocument.panelSettings = panelSetting;
         }
         
         Debug.Log("VoxelGameUIToolkit created successfully");

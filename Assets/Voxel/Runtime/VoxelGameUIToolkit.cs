@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -96,6 +97,12 @@ public class VoxelGameUIToolkit : MonoBehaviour
             UpdateUI();
             
             Debug.Log("VoxelGameUIToolkit: UI initialized successfully");
+            
+            // レイアウトの強制更新
+            root.MarkDirtyRepaint();
+            
+            // 次フレームでデバッグ情報を確認
+            StartCoroutine(DelayedDebug());
         }
         else
         {
@@ -417,6 +424,41 @@ public class VoxelGameUIToolkit : MonoBehaviour
             constructionItem.Add(progressLabel);
             
             constructionItems.Add(constructionItem);
+        }
+    }
+    
+    System.Collections.IEnumerator DelayedDebug()
+    {
+        yield return null; // 1フレーム待つ
+        Debug.Log("=== DELAYED DEBUG INFO ===");
+        DebugUIState();
+    }
+    
+    void DebugUIState()
+    {
+        Debug.Log($"UIDocument enabled: {uiDocument.enabled}");
+        Debug.Log($"UIDocument gameObject active: {uiDocument.gameObject.activeInHierarchy}");
+        Debug.Log($"Root element child count: {root.childCount}");
+        Debug.Log($"Panel settings: {uiDocument.panelSettings?.name}");
+        Debug.Log($"Visual tree asset: {uiDocument.visualTreeAsset?.name}");
+        Debug.Log($"Root element style display: {root.style.display}");
+        Debug.Log($"Root element style visibility: {root.style.visibility}");
+        Debug.Log($"Root element resolved style width: {root.resolvedStyle.width}");
+        Debug.Log($"Root element resolved style height: {root.resolvedStyle.height}");
+        Debug.Log($"Root element layout width: {root.layout.width}");
+        Debug.Log($"Root element layout height: {root.layout.height}");
+        
+        // Camera情報も確認
+        var camera = Camera.main;
+        if (camera != null)
+        {
+            Debug.Log($"Main camera: {camera.name}, enabled: {camera.enabled}");
+        }
+        
+        // 各UI要素の状態も確認
+        if (timeLabel != null)
+        {
+            Debug.Log($"Time label text: '{timeLabel.text}', layout: {timeLabel.layout}");
         }
     }
     

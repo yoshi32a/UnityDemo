@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -31,20 +32,42 @@ public class PlayerController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         
-        // カメラ設定
+        // カメラ設定 - MainCameraを取得してPlayerCameraとして使用
         if (!playerCamera)
         {
             playerCamera = Camera.main;
             if (!playerCamera)
             {
-                var camObj = new GameObject("Player Camera");
-                playerCamera = camObj.AddComponent<Camera>();
-                camObj.AddComponent<AudioListener>();
+                Debug.LogError("MainCameraが見つかりません！シーンにMainCameraを配置してください。");
+                return;
             }
         }
         
+        // カメラをプレイヤーに追従させる
         playerCamera.transform.SetParent(transform);
         playerCamera.transform.localPosition = new Vector3(0, cameraHeight, 0);
+        playerCamera.transform.localRotation = Quaternion.identity;
+        
+        Debug.Log($"Player position: {transform.position}, Camera position: {playerCamera.transform.position}");
+        Debug.Log($"Camera settings - nearClip: {playerCamera.nearClipPlane}, farClip: {playerCamera.farClipPlane}, cullingMask: {playerCamera.cullingMask}");
+        Debug.Log($"Camera clearFlags: {playerCamera.clearFlags}, backgroundColor: {playerCamera.backgroundColor}");
+        
+        // PlayerCameraがUIを上書きしないよう設定
+        var urpCameraData = playerCamera.GetComponent<UniversalAdditionalCameraData>();
+        if (urpCameraData != null)
+        {
+            // UIレンダリングを無効化
+            urpCameraData.renderPostProcessing = false;
+            urpCameraData.renderShadows = true;
+        }
+        
+        // レイヤーマスクでUIレイヤー（5番）を除外
+        playerCamera.cullingMask = ~(1 << 5); // UIレイヤーを描画しない
+        playerCamera.depth = 0;
+        
+        // テスト用：背景色を設定
+        playerCamera.clearFlags = CameraClearFlags.SolidColor;
+        playerCamera.backgroundColor = Color.blue;
         
         // マウスカーソルをロック
         Cursor.lockState = CursorLockMode.Locked;
