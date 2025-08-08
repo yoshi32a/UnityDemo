@@ -17,9 +17,6 @@ public class VoxelChunk : MonoBehaviour
     Mesh mesh;
     MeshFilter mf;
     MeshCollider mc;
-    
-    // TerrainGeneratorからアクセス可能にする
-    public NativeArray<Voxel> Voxels => voxels;
 
     public void Init(int3 coord, MaterialPalette pal, float voxel)
     {
@@ -93,5 +90,6 @@ public class VoxelChunk : MonoBehaviour
         return x>=0 && y>=0 && z>=0 && x<n && y<n && z<n;
     }
 
-    public ref NativeArray<Voxel> Voxels => ref voxels;
+    // TerrainGeneratorからアクセス可能にする
+    public NativeArray<Voxel> Voxels => voxels;
 }
