@@ -12,7 +12,7 @@ public class VoxelWorld : MonoBehaviour
 {
     public MaterialPalette palette;
     public float voxelSize = 0.5f;
-    public int viewRadius = 2; // チャンク半径
+    public int viewRadius = 1; // チャンク半径
 
     // ★ ここに任意のマテリアルを割り当てる（頂点カラー対応推奨）
     public Material defaultMaterial;
@@ -29,7 +29,7 @@ public class VoxelWorld : MonoBehaviour
         Application.targetFrameRate = 60;
         
         // チャンクを生成
-        for (int y = -1; y <= 2; y++)  // 高さ方向も複数チャンク
+        for (int y = -1; y <= 1; y++)  // 高さ方向を縮小
         for (int z = -viewRadius; z <= viewRadius; z++)
         for (int x = -viewRadius; x <= viewRadius; x++)
         {

@@ -146,7 +146,7 @@ public class VoxelGameSetup : EditorWindow
         
         // 設定
         world.voxelSize = 0.5f;
-        world.viewRadius = 2;
+        world.viewRadius = 1; // パフォーマンス向上のため縮小
         world.useProceduralTerrain = true;
         world.worldSeed = 12345;
         
