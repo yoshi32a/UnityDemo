@@ -13,7 +13,6 @@ public class DailyTaskManager : MonoBehaviour
     
     [Header("UI")]
     public bool showTaskUI = true;
-    Vector2 taskScrollPos;
     
     void Start()
     {
@@ -105,30 +104,4 @@ public class DailyTaskManager : MonoBehaviour
         Debug.Log($"タスク完了: {task.name} - 報酬を受け取りました！");
     }
     
-    void OnGUI()
-    {
-        if (!showTaskUI || !TimeSystem.Instance) return;
-        
-        GUILayout.BeginArea(new Rect(10, Screen.height - 250, 300, 240));
-        
-        GUILayout.Label("=== デイリータスク ===", GUI.skin.box);
-        GUILayout.Label($"{TimeSystem.Instance.GetTimeString()} ({TimeSystem.Instance.GetSeasonString()})");
-        
-        taskScrollPos = GUILayout.BeginScrollView(taskScrollPos, GUILayout.Height(180));
-        
-        foreach (var task in currentTasks)
-        {
-            GUILayout.BeginVertical(GUI.skin.box);
-            
-            string statusIcon = task.isCompleted ? "✓" : "○";
-            GUILayout.Label($"{statusIcon} {task.name}");
-            GUILayout.Label(task.description);
-            GUILayout.Label($"進捗: {task.currentAmount}/{task.targetAmount} ({task.Progress:P1})");
-            
-            GUILayout.EndVertical();
-        }
-        
-        GUILayout.EndScrollView();
-        GUILayout.EndArea();
-    }
 }

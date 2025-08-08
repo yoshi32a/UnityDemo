@@ -112,7 +112,6 @@ public class ConstructionManager : MonoBehaviour
     
     [Header("UI")]
     public bool showDebugUI = true;
-    Vector2 scrollPosition;
     
     public event Action<BuildingProject> OnProjectStarted;
     public event Action<BuildingProject> OnProjectCompleted;
@@ -284,69 +283,6 @@ public class ConstructionManager : MonoBehaviour
         Debug.Log("プロジェクト進行状況を保存しました");
     }
     
-    void OnGUI()
-    {
-        if (!showDebugUI) return;
-        
-        GUILayout.BeginArea(new Rect(Screen.width - 320, 10, 310, 600));
-        
-        GUILayout.Label("=== 建設管理 ===", GUI.skin.box);
-        
-        scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(500));
-        
-        // 利用可能プロジェクト
-        GUILayout.Label("利用可能なプロジェクト:");
-        foreach (var project in availableProjects)
-        {
-            GUILayout.BeginVertical(GUI.skin.box);
-            GUILayout.Label(project.name);
-            GUILayout.Label(project.description);
-            
-            foreach (var req in project.requirements)
-            {
-                int current = resourceInventory.GetResourceCount(req.resourceType);
-                GUILayout.Label($"{req.resourceType.name}: {current}/{req.requiredAmount}");
-            }
-            
-            if (GUILayout.Button("建設開始") && activeProjects.Count < maxActiveProjects)
-            {
-                StartProject(project, Vector3.zero);
-            }
-            GUILayout.EndVertical();
-        }
-        
-        // アクティブプロジェクト
-        if (activeProjects.Count > 0)
-        {
-            GUILayout.Label("進行中のプロジェクト:");
-            foreach (var project in activeProjects)
-            {
-                GUILayout.BeginVertical(GUI.skin.box);
-                GUILayout.Label(project.name);
-                
-                float progress = project.GetOverallProgress();
-                GUILayout.Label($"進行: {progress:P1}");
-                
-                if (!project.isStarted && project.CanStart())
-                {
-                    if (GUILayout.Button("資源投入して建設開始"))
-                    {
-                        TryStartConstruction(project);
-                    }
-                }
-                
-                if (GUILayout.Button("キャンセル"))
-                {
-                    CancelProject(project);
-                }
-                
-                GUILayout.EndVertical();
-            }
-        }
-        
-        GUILayout.EndScrollView();
-        GUILayout.EndArea();
-    }
 }
 
 // 完成した建物のコンポーネント
@@ -396,9 +332,3 @@ public class CompletedBuilding : MonoBehaviour
     }
 }
 
-// 建設プロジェクトのプリセット
-[CreateAssetMenu(menuName = "VoxelGame/BuildingProject")]
-public class BuildingProjectAsset : ScriptableObject
-{
-    public BuildingProject projectData;
-}

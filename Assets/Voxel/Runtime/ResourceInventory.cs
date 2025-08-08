@@ -182,22 +182,6 @@ public class ResourceInventory : MonoBehaviour
         return unique;
     }
     
-    void OnGUI()
-    {
-        if (!showDebugUI) return;
-        
-        GUILayout.BeginArea(new Rect(10, 10, 300, 400));
-        GUILayout.Label("=== 資源インベントリ ===", GUI.skin.box);
-        
-        var uniqueResources = GetUniqueResources();
-        foreach (var resource in uniqueResources)
-        {
-            int count = GetResourceCount(resource);
-            GUILayout.Label($"{resource.name}: {count}");
-        }
-        
-        GUILayout.EndArea();
-    }
 }
 
 // ブロック破壊時に資源をドロップするコンポーネント
