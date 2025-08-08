@@ -6,6 +6,7 @@ public class VoxelGameUIToolkit : MonoBehaviour
 {
     [Header("UI Documents")]
     public UIDocument uiDocument;
+    public PanelSettings panelSettings;
     
     [Header("References")]
     public VoxelBrush voxelBrush;
@@ -36,6 +37,12 @@ public class VoxelGameUIToolkit : MonoBehaviour
             {
                 uiDocument = gameObject.AddComponent<UIDocument>();
             }
+        }
+        
+        // PanelSettingを設定
+        if (panelSettings != null)
+        {
+            uiDocument.panelSettings = panelSettings;
         }
         
         // UXMLファイルを読み込み

@@ -251,6 +251,13 @@ public class VoxelGameSetup : EditorWindow
         GameObject gameUI = new GameObject("VoxelGameUIToolkit");
         var ui = gameUI.AddComponent<VoxelGameUIToolkit>();
         
+        // PanelSettingを設定
+        var panelSetting = AssetDatabase.LoadAssetAtPath<PanelSettings>("Assets/Voxel/UI/VoxelPanelSetting.asset");
+        if (panelSetting != null)
+        {
+            ui.panelSettings = panelSetting;
+        }
+        
         Debug.Log("VoxelGameUIToolkit created successfully");
     }
     
