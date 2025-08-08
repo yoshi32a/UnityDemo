@@ -60,6 +60,9 @@ public class VoxelGameUIToolkit : MonoBehaviour
             Debug.Log("VoxelGameUIToolkit: VisualTreeAsset loaded successfully");
             uiDocument.visualTreeAsset = visualTreeAsset;
             
+            // UIDocumentの設定を確認・調整
+            uiDocument.sortingOrder = 100; // 他のUIより前面に表示
+            
             // USSファイルを読み込み
             var styleSheet = Resources.Load<StyleSheet>("VoxelGameUI");
             if (styleSheet != null)
@@ -71,6 +74,17 @@ public class VoxelGameUIToolkit : MonoBehaviour
             {
                 Debug.LogWarning("VoxelGameUIToolkit: StyleSheet not found, applying inline styles");
             }
+            
+            // ルート要素の可視性と配置を確保
+            var root = uiDocument.rootVisualElement;
+            root.style.width = Length.Percent(100);
+            root.style.height = Length.Percent(100);
+            root.style.position = Position.Absolute;
+            root.style.top = 0;
+            root.style.left = 0;
+            root.style.backgroundColor = new Color(0, 0, 0, 0.1f); // デバッグ用の薄い背景
+            
+            Debug.Log($"VoxelGameUIToolkit: Root style applied - width: {root.style.width}, height: {root.style.height}");
             
             // UI要素を取得
             InitializeUIElements();
@@ -127,13 +141,35 @@ public class VoxelGameUIToolkit : MonoBehaviour
             timeLabel.style.color = Color.red;
             timeLabel.style.fontSize = 24;
             timeLabel.style.position = Position.Absolute;
-            timeLabel.style.top = 10;
-            timeLabel.style.left = 10;
+            timeLabel.style.top = 50;
+            timeLabel.style.left = 50;
             timeLabel.style.backgroundColor = Color.black;
             timeLabel.style.paddingTop = 10;
             timeLabel.style.paddingBottom = 10;
             timeLabel.style.paddingLeft = 20;
             timeLabel.style.paddingRight = 20;
+            timeLabel.style.width = 300;
+            timeLabel.style.height = 50;
+            timeLabel.style.display = DisplayStyle.Flex;
+            timeLabel.style.visibility = Visibility.Visible;
+            timeLabel.style.opacity = 1;
+            Debug.Log($"VoxelGameUIToolkit: Test label styled - display: {timeLabel.style.display}, visibility: {timeLabel.style.visibility}");
+        }
+        else
+        {
+            Debug.LogError("VoxelGameUIToolkit: timeLabel is null!");
+            
+            // 代替として新しいラベルを直接作成
+            var testLabel = new Label("DIRECT TEST LABEL");
+            testLabel.style.position = Position.Absolute;
+            testLabel.style.top = 100;
+            testLabel.style.left = 100;
+            testLabel.style.color = Color.yellow;
+            testLabel.style.fontSize = 30;
+            testLabel.style.backgroundColor = Color.blue;
+            testLabel.style.padding = 20;
+            root.Add(testLabel);
+            Debug.Log("VoxelGameUIToolkit: Direct test label added");
         }
         
         // メインコンテナにも背景を設定
@@ -145,6 +181,32 @@ public class VoxelGameUIToolkit : MonoBehaviour
             mainContainer.style.position = Position.Absolute;
             Debug.Log("VoxelGameUIToolkit: Main container styled");
         }
+        
+        // 絶対確実に表示されるテスト要素を追加
+        var absoluteTestElement = new VisualElement();
+        absoluteTestElement.style.position = Position.Absolute;
+        absoluteTestElement.style.top = 0;
+        absoluteTestElement.style.left = 0;
+        absoluteTestElement.style.width = 200;
+        absoluteTestElement.style.height = 100;
+        absoluteTestElement.style.backgroundColor = Color.magenta;
+        absoluteTestElement.style.borderBottomColor = Color.white;
+        absoluteTestElement.style.borderBottomWidth = 3;
+        absoluteTestElement.style.borderTopColor = Color.white;
+        absoluteTestElement.style.borderTopWidth = 3;
+        absoluteTestElement.style.borderLeftColor = Color.white;
+        absoluteTestElement.style.borderLeftWidth = 3;
+        absoluteTestElement.style.borderRightColor = Color.white;
+        absoluteTestElement.style.borderRightWidth = 3;
+        
+        var absoluteTestLabel = new Label("UI TOOLKIT ACTIVE");
+        absoluteTestLabel.style.color = Color.white;
+        absoluteTestLabel.style.fontSize = 16;
+        absoluteTestLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+        absoluteTestElement.Add(absoluteTestLabel);
+        
+        root.Add(absoluteTestElement);
+        Debug.Log("VoxelGameUIToolkit: Absolute test element added directly to root");
     }
     
     void CreateMaterialSlots()
