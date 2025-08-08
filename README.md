@@ -18,28 +18,98 @@ Minecraftスタイルのボクセル地形システムを実装したUnityデモ
 
 ## セットアップ
 
-1. リポジトリをクローン
+### 1. リポジトリをクローン
 ```bash
 git clone git@github.com:yoshi32a/UnityDemo.git
 cd UnityDemo
 ```
 
-2. Unity Hubで開く
-   - Unity 6000.1.10f1がインストールされていることを確認
-   - プロジェクトをUnity Hubから開く
+### 2. Unity Hubで開く
+- Unity 6000.1.10f1がインストールされていることを確認
+- プロジェクトをUnity Hubから開く
 
-3. プレイモードで実行
-   - Unity Editorで`Assets/Scenes/VoxelSampleScene.unity`を開く
-   - プレイボタンを押して実行
+### 3. シーンセットアップ
+Unity Editorで`Assets/Scenes/VoxelSampleScene.unity`を開き、以下のゲームオブジェクトを設定：
+
+#### プレイヤーオブジェクトの作成
+1. **Hierarchy** で右クリック → **Create Empty** → 名前を「Player」に変更
+2. **Player** を選択して **Inspector** で：
+   - **Add Component** → **Character Controller**
+   - **Add Component** → **Player Controller**
+
+#### VoxelWorldオブジェクトの作成
+1. **Hierarchy** で右クリック → **Create Empty** → 名前を「VoxelWorld」に変更
+2. **VoxelWorld** を選択して **Inspector** で：
+   - **Add Component** → **Voxel World**
+   - **Use Procedural Terrain** にチェック
+   - **World Seed** を任意の数値に設定（地形生成用）
+
+#### VoxelBrushオブジェクトの作成
+1. **Hierarchy** で右クリック → **Create Empty** → 名前を「VoxelBrush」に変更
+2. **VoxelBrush** を選択して **Inspector** で：
+   - **Add Component** → **Voxel Brush**
+   - **World** に VoxelWorld オブジェクトをドラッグ
+   - **Player** に Player オブジェクトをドラッグ
+   - **Use First Person** にチェック
+
+#### ゲームUIの作成
+1. **Hierarchy** で右クリック → **Create Empty** → 名前を「GameUI」に変更
+2. **GameUI** を選択して **Inspector** で：
+   - **Add Component** → **Voxel Game UI**
+   - **Voxel Brush** に VoxelBrush オブジェクトをドラッグ
+   - **Voxel World** に VoxelWorld オブジェクトをドラッグ
+
+#### マテリアルパレットの設定
+1. **Project** で右クリック → **Create** → **Voxel** → **Material Palette**
+2. 名前を「VoxelMaterialPalette」に変更
+3. **Inspector** でマテリアルエントリーを追加：
+   - エントリー 1: 土（茶色 #8B4513）
+   - エントリー 2: 草（緑色 #228B22）
+   - エントリー 3: 石（灰色 #696969）
+   - エントリー 4: 砂（黄色 #F4A460）
+   - エントリー 5: 雪（白色 #FFFAFA）
+   - エントリー 6: 木材（茶色 #DEB887）
+   - エントリー 7: 葉（濃緑 #006400）
+4. **VoxelWorld** の **Palette** フィールドにドラッグ
+
+### 4. プレイモードで実行
+- Unity Editorの **▶️ Play** ボタンをクリック
+- **Game** ウィンドウをクリックしてフォーカスを当てる
 
 ## 操作方法
 
+### 基本操作
 | 操作 | アクション |
 |------|-----------|
-| **左クリック** | ボクセルを削除 |
-| **右クリック** | ボクセルを追加 |
-| **数字キー 1-6** | マテリアル切り替え |
-| **マウス移動** | 視点操作 |
+| **W/A/S/D** | 前後左右移動 |
+| **マウス移動** | 視点操作（一人称視点） |
+| **Space** | ジャンプ |
+| **Left Shift** | ダッシュ（高速移動） |
+| **ESC** | マウスカーソル表示切替 |
+
+### ブロック編集
+| 操作 | アクション |
+|------|-----------|
+| **左クリック** | ブロック破壊 |
+| **右クリック** | ブロック配置 |
+| **数字キー 1-9** | マテリアル切り替え |
+
+### UI操作
+| 操作 | アクション |
+|------|-----------|
+| **Tab** | インベントリ表示/非表示 |
+| **F1** | ヘルプ表示切替 |
+
+### マテリアル一覧
+1. **土** - 基本的な建築ブロック
+2. **草** - 地表の装飾
+3. **石** - 堅固な建築材料
+4. **砂** - 砂漠バイオーム用
+5. **雪** - 山岳バイオーム用
+6. **木材** - 木の幹部分
+7. **葉** - 木の葉部分
+8. **レンガ** - 装飾用建築材料
+9. **ガラス** - 透明建築材料（将来実装予定）
 
 ## プロジェクト構造
 
@@ -95,12 +165,37 @@ public const int ChunkSize = 32; // 16, 64などに変更可能
 
 ## トラブルシューティング
 
-| 問題 | 解決方法 |
-|------|----------|
-| マテリアルが紫色になる | CustomLitShader.shadergraphを再インポート |
-| 操作が効かない | VoxelBrushコンポーネントとCamera.mainの存在を確認 |
-| パフォーマンスが低い | VoxelWorld.viewRadiusを小さくする |
-| メモリ不足警告 | ChunkSizeを小さくするか、遠方チャンクのアンロードを実装 |
+### よくある問題と解決方法
+
+| 問題 | 原因 | 解決方法 |
+|------|------|----------|
+| **ゲームが開始されない** | オブジェクトの設定不備 | 上記のセットアップ手順を再確認 |
+| **マウス操作ができない** | フォーカスが当たっていない | Gameウィンドウをクリック、ESCキーでカーソル状態を確認 |
+| **移動できない** | CharacterControllerが未設定 | PlayerオブジェクトにCharacterControllerを追加 |
+| **ブロックが配置/破壊できない** | VoxelBrushの参照エラー | VoxelBrushのWorldとPlayerフィールドを正しく設定 |
+| **マテリアルが紫色になる** | シェーダーエラー | CustomLitShader.shadergraphを再インポート |
+| **地形が生成されない** | マテリアルパレット未設定 | VoxelMaterialPaletteを作成してVoxelWorldに設定 |
+| **パフォーマンスが低い** | チャンク数が多すぎる | VoxelWorld.viewRadiusを2以下に設定 |
+| **メモリ不足警告** | チャンクサイズが大きい | VoxelConst.ChunkSizeを16に変更 |
+| **UIが表示されない** | Canvas未作成 | VoxelGameUIが自動でCanvasを作成するまで待機 |
+
+### デバッグのヒント
+
+1. **Console ウィンドウを確認**
+   - Unity Editor → Window → General → Console
+   - エラーメッセージがある場合は内容を確認
+
+2. **Inspector での設定確認**
+   - 各コンポーネントのフィールドがすべて設定されているか
+   - null参照エラーが出ていないか
+
+3. **プレイモード中の状態確認**
+   - Sceneビューでプレイヤーの位置を確認
+   - Gameビューでフォーカスが当たっているか確認
+
+4. **パフォーマンス確認**
+   - Window → Analysis → Profiler
+   - FPSが30以下の場合はviewRadiusを削減
 
 ## 今後の拡張予定
 

@@ -45,17 +45,66 @@ Unity 6000.1.10f1を使用したボクセルデモプロジェクトです。Uni
 - **プレイモード**: Unity Editorでプレイモードに入りボクセル操作をテスト
 - **シーン**: メインシーンは`Assets/Scenes/VoxelSampleScene.unity`
 
+### 必要なゲームオブジェクトの設定
+
+#### プレイヤー設定
+```
+Player (Empty GameObject)
+├── Character Controller
+├── Player Controller Script
+└── Main Camera (子オブジェクト)
+```
+
+#### ワールド設定  
+```
+VoxelWorld (Empty GameObject)
+├── Voxel World Script
+│   ├── Use Procedural Terrain: ✓
+│   ├── World Seed: 12345
+│   ├── Palette: VoxelMaterialPalette
+│   └── View Radius: 2
+```
+
+#### ブラシ設定
+```
+VoxelBrush (Empty GameObject)
+├── Voxel Brush Script
+│   ├── World: VoxelWorld参照
+│   ├── Player: Player参照
+│   ├── Use First Person: ✓
+│   └── Interaction Distance: 10
+```
+
 ### ビルド設定
 - **ターゲットプラットフォーム**: PC/Mac/Linux Standalone向けに設定
 - **グラフィックスAPI**: URPでリニアカラースペース
 - **入力システム**: Unityの新Input Systemパッケージを使用
 
-### ボクセルシステムのテスト
+### ゲーム操作方法
+
+#### 基本移動
+- **W/A/S/D**: 前後左右移動
+- **マウス**: 視点操作（一人称）
+- **Space**: ジャンプ
+- **Left Shift**: ダッシュ（高速移動）
+- **ESC**: マウスカーソル表示切替
+
+#### ブロック編集
+- **左クリック**: ブロック破壊
+- **右クリック**: ブロック配置
+- **数字キー1-9**: マテリアル切り替え
+
+#### UI操作
+- **Tab**: インベントリ表示/非表示
+- **F1**: ヘルプ表示切替
+
+### テスト手順
 1. Unity Editorでプレイモードに入る
-2. マウスで地形を狙う
-3. 左クリックでボクセル削除
-4. 右クリックでボクセル追加
-5. 数字キー1-6でマテリアル切り替え
+2. **Game**ウィンドウをクリックしてフォーカスを当てる
+3. WASDで移動、マウスで視点操作を確認
+4. 左クリックでブロック破壊、右クリックで配置をテスト
+5. 数字キー1-9でマテリアル切り替えをテスト
+6. Tabキーでインベントリ表示を確認
 
 ## 重要な技術的考慮事項
 
