@@ -20,6 +20,10 @@ public class VoxelBrush : MonoBehaviour
     [Header("ブロック破壊エフェクト")]
     public GameObject blockBreakEffect; // パーティクルプレハブ
     public float effectDuration = 1f;
+    
+    [Header("資源システム")]
+    public ResourceDropper resourceDropper;
+    public DailyTaskManager taskManager;
 
     void Start()
     {
@@ -28,6 +32,12 @@ public class VoxelBrush : MonoBehaviour
         {
             player = FindFirstObjectByType<PlayerController>();
         }
+        
+        // 資源システムの参照を取得
+        if (!resourceDropper)
+            resourceDropper = FindFirstObjectByType<ResourceDropper>();
+        if (!taskManager)
+            taskManager = FindFirstObjectByType<DailyTaskManager>();
     }
 
     void Update()
@@ -107,15 +117,32 @@ public class VoxelBrush : MonoBehaviour
     
     void DestroyBlock(Vector3 position)
     {
-        // エフェクトを生成
-        if (blockBreakEffect)
+        // 破壊前のブロック情報を取得
+        if (world.TryGetVoxelAt(position, out Voxel voxel) && voxel.density > 0)
         {
-            var effect = Instantiate(blockBreakEffect, position, Quaternion.identity);
-            Destroy(effect, effectDuration);
+            // エフェクトを生成
+            if (blockBreakEffect)
+            {
+                var effect = Instantiate(blockBreakEffect, position, Quaternion.identity);
+                Destroy(effect, effectDuration);
+            }
+            
+            // 資源ドロップ処理
+            if (resourceDropper)
+            {
+                resourceDropper.OnBlockDestroyed(position, voxel.material);
+            }
+            
+            // タスク進捗更新（資源収集タスク）
+            if (taskManager)
+            {
+                // マテリアルに応じて適切なResourceTypeを取得する必要がある
+                // ここは簡略化のため省略
+            }
+            
+            // ブロックを削除
+            world.ApplyBrush(position, radius, -1, 255);
         }
-        
-        // ブロックを削除
-        world.ApplyBrush(position, radius, -1, 255);
     }
     
     void PlaceBlock(Vector3 position)
