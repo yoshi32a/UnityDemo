@@ -144,7 +144,7 @@ public static class TerrainGenerator
                 case BiomeType.Plains:
                     return 2; // 草
                 case BiomeType.Mountains:
-                    return y > 30 ? 5 : 1; // 雪または石
+                    return (byte)(y > 30 ? 5 : 1); // 雪または石
                 case BiomeType.Ocean:
                     return 4; // 砂（海底）
             }
