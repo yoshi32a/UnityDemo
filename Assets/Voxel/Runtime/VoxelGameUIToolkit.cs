@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+[RequireComponent(typeof(UIDocument))]
 public class VoxelGameUIToolkit : MonoBehaviour
 {
     [Header("UI Documents")]
     public UIDocument uiDocument;
-    public PanelSettings panelSettings;
     
     [Header("References")]
     public VoxelBrush voxelBrush;
@@ -29,6 +29,8 @@ public class VoxelGameUIToolkit : MonoBehaviour
     
     void Start()
     {
+        Debug.Log("VoxelGameUIToolkit: Start called");
+        
         // UIDocumentが無い場合は作成
         if (uiDocument == null)
         {
@@ -36,13 +38,18 @@ public class VoxelGameUIToolkit : MonoBehaviour
             if (uiDocument == null)
             {
                 uiDocument = gameObject.AddComponent<UIDocument>();
+                Debug.Log("VoxelGameUIToolkit: Created new UIDocument");
             }
         }
         
-        // PanelSettingを設定
-        if (panelSettings != null)
+        // PanelSettingsを確認
+        if (uiDocument.panelSettings == null)
         {
-            uiDocument.panelSettings = panelSettings;
+            Debug.LogWarning("VoxelGameUIToolkit: PanelSettings is null!");
+        }
+        else
+        {
+            Debug.Log("VoxelGameUIToolkit: PanelSettings found");
         }
         
         // UXMLファイルを読み込み
@@ -50,7 +57,20 @@ public class VoxelGameUIToolkit : MonoBehaviour
         
         if (visualTreeAsset != null)
         {
+            Debug.Log("VoxelGameUIToolkit: VisualTreeAsset loaded successfully");
             uiDocument.visualTreeAsset = visualTreeAsset;
+            
+            // USSファイルを読み込み
+            var styleSheet = Resources.Load<StyleSheet>("VoxelGameUI");
+            if (styleSheet != null)
+            {
+                uiDocument.rootVisualElement.styleSheets.Add(styleSheet);
+                Debug.Log("VoxelGameUIToolkit: StyleSheet loaded successfully");
+            }
+            else
+            {
+                Debug.LogWarning("VoxelGameUIToolkit: StyleSheet not found, applying inline styles");
+            }
             
             // UI要素を取得
             InitializeUIElements();
@@ -60,12 +80,25 @@ public class VoxelGameUIToolkit : MonoBehaviour
             
             // 初期状態を設定
             UpdateUI();
+            
+            Debug.Log("VoxelGameUIToolkit: UI initialized successfully");
+        }
+        else
+        {
+            Debug.LogError("VoxelGameUIToolkit: Failed to load VoxelGameUI.uxml from Resources!");
         }
     }
     
     void InitializeUIElements()
     {
         root = uiDocument.rootVisualElement;
+        Debug.Log($"VoxelGameUIToolkit: Root element found: {root != null}");
+        
+        if (root == null)
+        {
+            Debug.LogError("VoxelGameUIToolkit: Root element is null!");
+            return;
+        }
         
         // HUDパネルの要素
         timeLabel = root.Q<Label>("time-label");
@@ -79,8 +112,39 @@ public class VoxelGameUIToolkit : MonoBehaviour
         materialSlots = root.Q<VisualElement>("material-slots");
         helpText = root.Q<Label>("help-text");
         
+        // 要素が見つかったかログ出力
+        Debug.Log($"VoxelGameUIToolkit: timeLabel found: {timeLabel != null}");
+        Debug.Log($"VoxelGameUIToolkit: inventoryItems found: {inventoryItems != null}");
+        Debug.Log($"VoxelGameUIToolkit: materialSlots found: {materialSlots != null}");
+        
         // マテリアルスロットを作成
         CreateMaterialSlots();
+        
+        // テスト用に簡単なテキストとスタイルを設定
+        if (timeLabel != null)
+        {
+            timeLabel.text = "TEST: UI Working!";
+            timeLabel.style.color = Color.red;
+            timeLabel.style.fontSize = 24;
+            timeLabel.style.position = Position.Absolute;
+            timeLabel.style.top = 10;
+            timeLabel.style.left = 10;
+            timeLabel.style.backgroundColor = Color.black;
+            timeLabel.style.paddingTop = 10;
+            timeLabel.style.paddingBottom = 10;
+            timeLabel.style.paddingLeft = 20;
+            timeLabel.style.paddingRight = 20;
+        }
+        
+        // メインコンテナにも背景を設定
+        var mainContainer = root.Q<VisualElement>("main-container");
+        if (mainContainer != null)
+        {
+            mainContainer.style.width = Length.Percent(100);
+            mainContainer.style.height = Length.Percent(100);
+            mainContainer.style.position = Position.Absolute;
+            Debug.Log("VoxelGameUIToolkit: Main container styled");
+        }
     }
     
     void CreateMaterialSlots()
