@@ -26,7 +26,7 @@ public class VoxelBrush : MonoBehaviour
         // プレイヤーが設定されていない場合は探す
         if (!player && useFirstPerson)
         {
-            player = FindObjectOfType<PlayerController>();
+            player = FindFirstObjectByType<PlayerController>();
         }
     }
 
