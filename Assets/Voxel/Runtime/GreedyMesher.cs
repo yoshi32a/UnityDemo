@@ -2,7 +2,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-static class GreedyMesher
+public static class GreedyMesher
 {
     // 近傍が空気の面だけを張る（Minecraft系の基本）。
     // “同一素材”の面を貫通統合してポリゴン数を削減（Greedy）

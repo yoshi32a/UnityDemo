@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
-class VoxelChunk : MonoBehaviour
+public class VoxelChunk : MonoBehaviour
 {
     public MaterialPalette palette;
     public int3 chunkCoord; // ワールド→チャンク座標
@@ -17,6 +17,9 @@ class VoxelChunk : MonoBehaviour
     Mesh mesh;
     MeshFilter mf;
     MeshCollider mc;
+    
+    // TerrainGeneratorからアクセス可能にする
+    public NativeArray<Voxel> Voxels => voxels;
 
     public void Init(int3 coord, MaterialPalette pal, float voxel)
     {

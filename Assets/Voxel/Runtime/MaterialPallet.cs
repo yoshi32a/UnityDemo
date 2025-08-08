@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Voxel/MaterialPalette")]
-class MaterialPalette : ScriptableObject
+public class MaterialPalette : ScriptableObject
 {
     [System.Serializable]
     public class Entry
