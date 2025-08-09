@@ -9,6 +9,7 @@ public class VoxelChunk : MonoBehaviour
     public MaterialPalette palette;
     public int3 chunkCoord; // ワールド→チャンク座標
     public float voxelSize = 0.5f;
+    public bool useSmoothMesh = true; // バナンザ風の滑らかなメッシュを使用
 
     NativeArray<Voxel> voxels; // length: ChunkSize^3
     bool isInitialized;
@@ -73,9 +74,23 @@ public class VoxelChunk : MonoBehaviour
     {
         if (!dirty) return;
         dirty = false;
-        GreedyMesher.BuildMesh(this, ref mesh);
+        
+        if (useSmoothMesh)
+        {
+            SmoothMesher.BuildSmoothMesh(this, ref mesh);
+        }
+        else
+        {
+            GreedyMesher.BuildMesh(this, ref mesh);
+        }
+        
+        // Colliderは常にGreedyMesherを使用（正確な当たり判定のため）
+        var colliderMesh = new Mesh();
+        colliderMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        GreedyMesher.BuildMesh(this, ref colliderMesh);
+        
         mc.sharedMesh = null; // 再アサインで更新
-        mc.sharedMesh = mesh;
+        mc.sharedMesh = colliderMesh;
     }
 
     // ワールド→ローカルボクセル座標
