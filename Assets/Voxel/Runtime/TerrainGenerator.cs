@@ -62,9 +62,13 @@ public static class TerrainGenerator
         }
     }
     
-    // 高さを生成
+    // 高さを生成（平面化）
     static float GenerateHeight(int x, int z, TerrainSettings settings)
     {
+        // 平面地形：基準高さのみ使用
+        return settings.baseHeight;
+        
+        /* 元の複雑な地形生成（コメントアウト）
         float height = 0;
         
         // 複数のオクターブを重ねて自然な地形を生成
@@ -84,6 +88,7 @@ public static class TerrainGenerator
         }
         
         return settings.baseHeight + height * settings.heightScale;
+        */
     }
     
     // バイオームを決定
@@ -113,8 +118,8 @@ public static class TerrainGenerator
     // ボクセルを生成
     static Voxel GenerateVoxel(int x, int y, int z, float surfaceHeight, BiomeType biome, TerrainSettings settings, Unity.Mathematics.Random random)
     {
-        // 空気
-        if (y > surfaceHeight)
+        // 空気 (surfaceHeight以上は空気にする)
+        if (y >= surfaceHeight)
             return new Voxel { density = 0, material = 0 };
         
         // 洞窟生成

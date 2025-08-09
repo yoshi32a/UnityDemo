@@ -133,6 +133,7 @@ public class VoxelWorld : MonoBehaviour
         go.transform.position = new Vector3(coord.x*size, coord.y*size, coord.z*size);
 
         var ch = go.AddComponent<VoxelChunk>();
+        ch.useSmoothMesh = true; // バナンザ風の滑らかなメッシュを使用
         var mr = go.GetComponent<MeshRenderer>();
 
         // ★ ここでInspector指定のマテリアルを使用（nullならフォールバックを作成）
@@ -176,34 +177,67 @@ public class VoxelWorld : MonoBehaviour
         if (!TryWorldToChunk(worldPos, out ccoord, out ch)) return;
 
         var n = VoxelConst.ChunkSize;
-        var r2 = radius*radius;
+        var r2 = radius * radius;
 
-        // 近傍チャンクも巻き込む
-        for (int dz=-1; dz<=1; dz++)
-        for (int dy=-1; dy<=1; dy++)
-        for (int dx=-1; dx<=1; dx++)
+        // 影響範囲のチャンクを計算（ブラシ半径に基づいて）
+        float chunkSize = n * voxelSize;
+        int chunkRadiusX = Mathf.CeilToInt(radius / chunkSize);
+        int chunkRadiusY = Mathf.CeilToInt(radius / chunkSize);  
+        int chunkRadiusZ = Mathf.CeilToInt(radius / chunkSize);
+        
+        // 通常は1チャンクのみで十分（radius=1.2, chunkSize=16なので）
+        chunkRadiusX = Mathf.Min(chunkRadiusX, 1);
+        chunkRadiusY = Mathf.Min(chunkRadiusY, 1);
+        chunkRadiusZ = Mathf.Min(chunkRadiusZ, 1);
+
+        // 近隣チャンクも巻き込む（最適化版）
+        for (int dz = -chunkRadiusZ; dz <= chunkRadiusZ; dz++)
+        for (int dy = -chunkRadiusY; dy <= chunkRadiusY; dy++)
+        for (int dx = -chunkRadiusX; dx <= chunkRadiusX; dx++)
         {
-            var cc = new int3(ccoord.x+dx, ccoord.y+dy, ccoord.z+dz);
+            var cc = new int3(ccoord.x + dx, ccoord.y + dy, ccoord.z + dz);
             if (!chunks.TryGetValue(cc, out var cch)) continue;
 
-            // ワールド→ローカルボクセルで領域走査
+            // このチャンク内でのブラシ範囲を計算
             var basePos = cch.transform.position;
-            for (int z=0; z<n; z++)
-            for (int y=0; y<n; y++)
-            for (int x=0; x<n; x++)
+            
+            // ブラシ範囲をボクセル座標で事前計算
+            int minX = Mathf.Max(0, Mathf.FloorToInt((worldPos.x - radius - basePos.x) / voxelSize));
+            int maxX = Mathf.Min(n - 1, Mathf.CeilToInt((worldPos.x + radius - basePos.x) / voxelSize));
+            int minY = Mathf.Max(0, Mathf.FloorToInt((worldPos.y - radius - basePos.y) / voxelSize));
+            int maxY = Mathf.Min(n - 1, Mathf.CeilToInt((worldPos.y + radius - basePos.y) / voxelSize));
+            int minZ = Mathf.Max(0, Mathf.FloorToInt((worldPos.z - radius - basePos.z) / voxelSize));
+            int maxZ = Mathf.Min(n - 1, Mathf.CeilToInt((worldPos.z + radius - basePos.z) / voxelSize));
+
+            // 範囲内のボクセルのみをチェック（大幅な最適化）
+            bool chunkModified = false;
+            for (int z = minZ; z <= maxZ; z++)
+            for (int y = minY; y <= maxY; y++)
+            for (int x = minX; x <= maxX; x++)
             {
-                var center = basePos + new Vector3((x+0.5f)*cch.voxelSize, (y+0.5f)*cch.voxelSize, (z+0.5f)*cch.voxelSize);
+                var center = basePos + new Vector3((x + 0.5f) * voxelSize, (y + 0.5f) * voxelSize, (z + 0.5f) * voxelSize);
                 var d2 = (center - worldPos).sqrMagnitude;
                 if (d2 > r2) continue;
 
-                var v = cch.Get(x,y,z);
+                var v = cch.Get(x, y, z);
                 int den = v.density + deltaDensity;
                 den = Mathf.Clamp(den, 0, 1);
-                v.density = (byte)den;
-                if (material!=255) v.material = material;
-                cch.Set(x,y,z,v);
+                
+                // 実際に変更があった場合のみ更新
+                if (v.density != den || (material != 255 && v.material != material))
+                {
+                    v.density = (byte)den;
+                    if (material != 255) v.material = material;
+                    cch.Set(x, y, z, v);
+                    chunkModified = true;
+                }
             }
-            cch.RebuildIfDirty();
+            
+            // 変更があったチャンクのみ再構築
+            if (chunkModified)
+            {
+                cch.RebuildIfDirty();
+            }
         }
     }
     
@@ -212,8 +246,22 @@ public class VoxelWorld : MonoBehaviour
     {
         voxel = default;
         
+        var voxelBrush = FindFirstObjectByType<VoxelBrush>();
+        bool debugEnabled = voxelBrush != null && voxelBrush.debugMode;
+        
+        if (debugEnabled)
+        {
+            Debug.Log($"[VoxelWorld] TryGetVoxelAt called with worldPos: {worldPos}");
+        }
+        
         if (!TryWorldToChunk(worldPos, out var chunkCoord, out var chunk))
+        {
+            if (debugEnabled)
+            {
+                Debug.Log($"[VoxelWorld] No chunk found for worldPos: {worldPos}");
+            }
             return false;
+        }
         
         var localPos = worldPos - chunk.transform.position;
         var n = VoxelConst.ChunkSize;
@@ -222,10 +270,27 @@ public class VoxelWorld : MonoBehaviour
         int y = Mathf.FloorToInt(localPos.y / voxelSize);
         int z = Mathf.FloorToInt(localPos.z / voxelSize);
         
+        if (debugEnabled)
+        {
+            Debug.Log($"[VoxelWorld] Chunk: {chunkCoord}, LocalPos: {localPos}, VoxelIndices: ({x},{y},{z})");
+        }
+        
         if (x < 0 || x >= n || y < 0 || y >= n || z < 0 || z >= n)
+        {
+            if (debugEnabled)
+            {
+                Debug.Log($"[VoxelWorld] Voxel indices out of bounds: ({x},{y},{z}), ChunkSize: {n}");
+            }
             return false;
+        }
         
         voxel = chunk.Get(x, y, z);
+        
+        if (debugEnabled)
+        {
+            Debug.Log($"[VoxelWorld] Retrieved voxel - Density: {voxel.density}, Material: {voxel.material}");
+        }
+        
         return true;
     }
     

@@ -48,6 +48,27 @@ public class PlayerController : MonoBehaviour
         playerCamera.transform.localPosition = new Vector3(0, cameraHeight, 0);
         playerCamera.transform.localRotation = Quaternion.identity;
         
+        // プレイヤー位置を地形の高さに調整
+        var voxelWorld = FindFirstObjectByType<VoxelWorld>();
+        if (voxelWorld != null)
+        {
+            // 正しい地表の高さを計算（baseHeightはボクセル単位なので、Unity座標に変換）
+            float groundHeightInUnityUnits = voxelWorld.terrainSettings.baseHeight * voxelWorld.voxelSize;
+            // プレイヤーを地表の3m上に配置
+            Vector3 newPos = new Vector3(0f, groundHeightInUnityUnits + 3f, 0f); // 原点に配置
+            
+            // CharacterControllerを一時的に無効化して確実に移動
+            controller.enabled = false;
+            transform.position = newPos;
+            controller.enabled = true;
+            
+            // 重力速度をリセット
+            velocity = Vector3.zero;
+            
+            Debug.Log($"Player spawn setup - BaseHeight (voxels): {voxelWorld.terrainSettings.baseHeight}, VoxelSize: {voxelWorld.voxelSize}");
+            Debug.Log($"Ground height (Unity units): {groundHeightInUnityUnits}, Player spawn position: {newPos}");
+        }
+        
         Debug.Log($"Player position: {transform.position}, Camera position: {playerCamera.transform.position}");
         Debug.Log($"Camera settings - nearClip: {playerCamera.nearClipPlane}, farClip: {playerCamera.farClipPlane}, cullingMask: {playerCamera.cullingMask}");
         Debug.Log($"Camera clearFlags: {playerCamera.clearFlags}, backgroundColor: {playerCamera.backgroundColor}");
@@ -91,6 +112,28 @@ public class PlayerController : MonoBehaviour
             {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
+            }
+        }
+        
+        // Tキーでプレイヤーを地表に移動
+        if (Keyboard.current.tKey.wasPressedThisFrame)
+        {
+            var voxelWorld = FindFirstObjectByType<VoxelWorld>();
+            if (voxelWorld != null)
+            {
+                float groundHeightInUnityUnits = voxelWorld.terrainSettings.baseHeight * voxelWorld.voxelSize;
+                Vector3 newPos = new Vector3(transform.position.x, groundHeightInUnityUnits + 3f, transform.position.z);
+                
+                // 重力速度をリセット
+                velocity = Vector3.zero;
+                
+                // CharacterControllerで移動
+                controller.enabled = false;
+                transform.position = newPos;
+                controller.enabled = true;
+                
+                Debug.Log($"Manual teleport - Ground (Unity units): {groundHeightInUnityUnits}, New position: {newPos}");
+                Debug.Log($"BaseHeight (voxels): {voxelWorld.terrainSettings.baseHeight}, VoxelSize: {voxelWorld.voxelSize}");
             }
         }
     }
@@ -159,7 +202,44 @@ public class PlayerController : MonoBehaviour
     // 現在見ている位置を取得
     public bool GetLookingAt(float maxDistance, out RaycastHit hit)
     {
-        return Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, maxDistance);
+        var rayOrigin = playerCamera.transform.position;
+        var rayDirection = playerCamera.transform.forward;
+        
+        // 複数のレイキャストを試行（中央、少しずらした位置）
+        bool hitResult = Physics.Raycast(rayOrigin, rayDirection, out hit, maxDistance);
+        
+        // デバッグ情報（VoxelBrushからのデバッグモードを参照するため）
+        var voxelBrush = FindFirstObjectByType<VoxelBrush>();
+        if (voxelBrush != null && voxelBrush.debugMode)
+        {
+            if (voxelBrush.showRaycast)
+            {
+                Debug.DrawRay(rayOrigin, rayDirection * maxDistance, hitResult ? Color.red : Color.white, 0.1f);
+                
+                // 追加のレイキャストでより詳細な情報を取得
+                var allHits = Physics.RaycastAll(rayOrigin, rayDirection, maxDistance);
+                Debug.Log($"[PlayerController] Total hits detected: {allHits.Length}");
+                
+                for (int i = 0; i < allHits.Length; i++)
+                {
+                    var h = allHits[i];
+                    Debug.Log($"[PlayerController] Hit {i}: {h.collider.name} at {h.point} (distance: {h.distance:F2})");
+                }
+            }
+            
+            if (hitResult)
+            {
+                Debug.Log($"[PlayerController] Primary Raycast HIT - Object: {hit.collider.name}, Point: {hit.point}, Distance: {hit.distance:F2}, Normal: {hit.normal}");
+                Debug.Log($"[PlayerController] Collider Bounds: {hit.collider.bounds.min} to {hit.collider.bounds.max}");
+            }
+            else
+            {
+                Debug.Log($"[PlayerController] Raycast MISS - Origin: {rayOrigin}, Direction: {rayDirection}, MaxDistance: {maxDistance}");
+                Debug.Log($"[PlayerController] Camera euler: {playerCamera.transform.eulerAngles}");
+            }
+        }
+        
+        return hitResult;
     }
     
     // ブロックを配置する位置を取得
