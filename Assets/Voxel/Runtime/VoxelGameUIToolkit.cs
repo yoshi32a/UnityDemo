@@ -30,8 +30,6 @@ public class VoxelGameUIToolkit : MonoBehaviour
     
     void Start()
     {
-        Debug.Log("VoxelGameUIToolkit: Start called");
-        
         // UIDocumentが無い場合は作成
         if (uiDocument == null)
         {
@@ -39,7 +37,6 @@ public class VoxelGameUIToolkit : MonoBehaviour
             if (uiDocument == null)
             {
                 uiDocument = gameObject.AddComponent<UIDocument>();
-                Debug.Log("VoxelGameUIToolkit: Created new UIDocument");
             }
         }
         
@@ -47,10 +44,7 @@ public class VoxelGameUIToolkit : MonoBehaviour
         if (uiDocument.panelSettings == null)
         {
             Debug.LogWarning("VoxelGameUIToolkit: PanelSettings is null!");
-        }
-        else
-        {
-            Debug.Log("VoxelGameUIToolkit: PanelSettings found");
+            return;
         }
         
         // UXMLファイルを読み込み
@@ -58,7 +52,6 @@ public class VoxelGameUIToolkit : MonoBehaviour
         
         if (visualTreeAsset != null)
         {
-            Debug.Log("VoxelGameUIToolkit: VisualTreeAsset loaded successfully");
             uiDocument.visualTreeAsset = visualTreeAsset;
             
             // UIDocumentの設定を確認・調整
@@ -69,11 +62,6 @@ public class VoxelGameUIToolkit : MonoBehaviour
             if (styleSheet != null)
             {
                 uiDocument.rootVisualElement.styleSheets.Add(styleSheet);
-                Debug.Log("VoxelGameUIToolkit: StyleSheet loaded successfully");
-            }
-            else
-            {
-                Debug.LogWarning("VoxelGameUIToolkit: StyleSheet not found, applying inline styles");
             }
             
             // ルート要素の可視性と配置を確保
@@ -83,9 +71,6 @@ public class VoxelGameUIToolkit : MonoBehaviour
             root.style.position = Position.Absolute;
             root.style.top = 0;
             root.style.left = 0;
-            root.style.backgroundColor = new Color(0, 0, 0, 0.1f); // デバッグ用の薄い背景
-            
-            Debug.Log($"VoxelGameUIToolkit: Root style applied - width: {root.style.width}, height: {root.style.height}");
             
             // UI要素を取得
             InitializeUIElements();
@@ -96,13 +81,9 @@ public class VoxelGameUIToolkit : MonoBehaviour
             // 初期状態を設定
             UpdateUI();
             
-            Debug.Log("VoxelGameUIToolkit: UI initialized successfully");
             
             // レイアウトの強制更新
             root.MarkDirtyRepaint();
-            
-            // 次フレームでデバッグ情報を確認
-            StartCoroutine(DelayedDebug());
         }
         else
         {
@@ -113,7 +94,6 @@ public class VoxelGameUIToolkit : MonoBehaviour
     void InitializeUIElements()
     {
         root = uiDocument.rootVisualElement;
-        Debug.Log($"VoxelGameUIToolkit: Root element found: {root != null}");
         
         if (root == null)
         {
@@ -133,90 +113,8 @@ public class VoxelGameUIToolkit : MonoBehaviour
         materialSlots = root.Q<VisualElement>("material-slots");
         helpText = root.Q<Label>("help-text");
         
-        // 要素が見つかったかログ出力
-        Debug.Log($"VoxelGameUIToolkit: timeLabel found: {timeLabel != null}");
-        Debug.Log($"VoxelGameUIToolkit: inventoryItems found: {inventoryItems != null}");
-        Debug.Log($"VoxelGameUIToolkit: materialSlots found: {materialSlots != null}");
-        
         // マテリアルスロットを作成
         CreateMaterialSlots();
-        
-        // テスト用に簡単なテキストとスタイルを設定
-        if (timeLabel != null)
-        {
-            timeLabel.text = "TEST: UI Working!";
-            timeLabel.style.color = Color.red;
-            timeLabel.style.fontSize = 24;
-            timeLabel.style.position = Position.Absolute;
-            timeLabel.style.top = 50;
-            timeLabel.style.left = 50;
-            timeLabel.style.backgroundColor = Color.black;
-            timeLabel.style.paddingTop = 10;
-            timeLabel.style.paddingBottom = 10;
-            timeLabel.style.paddingLeft = 20;
-            timeLabel.style.paddingRight = 20;
-            timeLabel.style.width = 300;
-            timeLabel.style.height = 50;
-            timeLabel.style.display = DisplayStyle.Flex;
-            timeLabel.style.visibility = Visibility.Visible;
-            timeLabel.style.opacity = 1;
-            Debug.Log($"VoxelGameUIToolkit: Test label styled - display: {timeLabel.style.display}, visibility: {timeLabel.style.visibility}");
-        }
-        else
-        {
-            Debug.LogError("VoxelGameUIToolkit: timeLabel is null!");
-            
-            // 代替として新しいラベルを直接作成
-            var testLabel = new Label("DIRECT TEST LABEL");
-            testLabel.style.position = Position.Absolute;
-            testLabel.style.top = 100;
-            testLabel.style.left = 100;
-            testLabel.style.color = Color.yellow;
-            testLabel.style.fontSize = 30;
-            testLabel.style.backgroundColor = Color.blue;
-            testLabel.style.paddingTop = 20;
-            testLabel.style.paddingBottom = 20;
-            testLabel.style.paddingLeft = 20;
-            testLabel.style.paddingRight = 20;
-            root.Add(testLabel);
-            Debug.Log("VoxelGameUIToolkit: Direct test label added");
-        }
-        
-        // メインコンテナにも背景を設定
-        var mainContainer = root.Q<VisualElement>("main-container");
-        if (mainContainer != null)
-        {
-            mainContainer.style.width = Length.Percent(100);
-            mainContainer.style.height = Length.Percent(100);
-            mainContainer.style.position = Position.Absolute;
-            Debug.Log("VoxelGameUIToolkit: Main container styled");
-        }
-        
-        // 絶対確実に表示されるテスト要素を追加
-        var absoluteTestElement = new VisualElement();
-        absoluteTestElement.style.position = Position.Absolute;
-        absoluteTestElement.style.top = 0;
-        absoluteTestElement.style.left = 0;
-        absoluteTestElement.style.width = 200;
-        absoluteTestElement.style.height = 100;
-        absoluteTestElement.style.backgroundColor = Color.magenta;
-        absoluteTestElement.style.borderBottomColor = Color.white;
-        absoluteTestElement.style.borderBottomWidth = 3;
-        absoluteTestElement.style.borderTopColor = Color.white;
-        absoluteTestElement.style.borderTopWidth = 3;
-        absoluteTestElement.style.borderLeftColor = Color.white;
-        absoluteTestElement.style.borderLeftWidth = 3;
-        absoluteTestElement.style.borderRightColor = Color.white;
-        absoluteTestElement.style.borderRightWidth = 3;
-        
-        var absoluteTestLabel = new Label("UI TOOLKIT ACTIVE");
-        absoluteTestLabel.style.color = Color.white;
-        absoluteTestLabel.style.fontSize = 16;
-        absoluteTestLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-        absoluteTestElement.Add(absoluteTestLabel);
-        
-        root.Add(absoluteTestElement);
-        Debug.Log("VoxelGameUIToolkit: Absolute test element added directly to root");
     }
     
     void CreateMaterialSlots()
@@ -286,12 +184,7 @@ public class VoxelGameUIToolkit : MonoBehaviour
             UpdateSelectedMaterial();
         }
     }
-    
-    void Update()
-    {
-        UpdateUI();
-    }
-    
+
     void UpdateUI()
     {
         UpdateTimeDisplay();
@@ -424,41 +317,6 @@ public class VoxelGameUIToolkit : MonoBehaviour
             constructionItem.Add(progressLabel);
             
             constructionItems.Add(constructionItem);
-        }
-    }
-    
-    System.Collections.IEnumerator DelayedDebug()
-    {
-        yield return null; // 1フレーム待つ
-        Debug.Log("=== DELAYED DEBUG INFO ===");
-        DebugUIState();
-    }
-    
-    void DebugUIState()
-    {
-        Debug.Log($"UIDocument enabled: {uiDocument.enabled}");
-        Debug.Log($"UIDocument gameObject active: {uiDocument.gameObject.activeInHierarchy}");
-        Debug.Log($"Root element child count: {root.childCount}");
-        Debug.Log($"Panel settings: {uiDocument.panelSettings?.name}");
-        Debug.Log($"Visual tree asset: {uiDocument.visualTreeAsset?.name}");
-        Debug.Log($"Root element style display: {root.style.display}");
-        Debug.Log($"Root element style visibility: {root.style.visibility}");
-        Debug.Log($"Root element resolved style width: {root.resolvedStyle.width}");
-        Debug.Log($"Root element resolved style height: {root.resolvedStyle.height}");
-        Debug.Log($"Root element layout width: {root.layout.width}");
-        Debug.Log($"Root element layout height: {root.layout.height}");
-        
-        // Camera情報も確認
-        var camera = Camera.main;
-        if (camera != null)
-        {
-            Debug.Log($"Main camera: {camera.name}, enabled: {camera.enabled}");
-        }
-        
-        // 各UI要素の状態も確認
-        if (timeLabel != null)
-        {
-            Debug.Log($"Time label text: '{timeLabel.text}', layout: {timeLabel.layout}");
         }
     }
     
