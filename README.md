@@ -29,7 +29,7 @@ cd UnityDemo
 - プロジェクトをUnity Hubから開く
 
 ### 3. シーンセットアップ
-Unity Editorで`Assets/Scenes/VoxelSampleScene.unity`を開き、以下のゲームオブジェクトを設定：
+Unity Editorで`Assets/Scenes/VoxelSample.unity`を開き、以下のゲームオブジェクトを設定：
 
 #### プレイヤーオブジェクトの作成
 1. **Hierarchy** で右クリック → **Create Empty** → 名前を「Player」に変更
@@ -98,7 +98,8 @@ Unity Editorで`Assets/Scenes/VoxelSampleScene.unity`を開き、以下のゲー
 | 操作 | アクション |
 |------|-----------|
 | **Tab** | インベントリ表示/非表示 |
-| **F1** | ヘルプ表示切替 |
+| **F1** | デバッグ情報をクリップボードにコピー |
+| **T** | 地面へテレポート |
 
 ### マテリアル一覧
 1. **土** - 基本的な建築ブロック
@@ -120,13 +121,16 @@ Assets/
 │   │   ├── VoxelWorld.cs     # ワールド管理
 │   │   ├── VoxelChunk.cs     # チャンク管理
 │   │   ├── GreedyMesher.cs   # メッシュ生成
+│   │   ├── SmoothMesher.cs   # スムースメッシュ生成
+│   │   ├── PlayerController.cs # プレイヤー制御
+│   │   ├── TerrainGenerator.cs # 地形生成
 │   │   ├── VoxelBrush.cs     # 編集ツール
 │   │   ├── VoxelTypes.cs     # データ構造
 │   │   └── MaterialPallet.cs # マテリアル定義
 │   ├── CustomLitShader.shadergraph  # カスタムシェーダー
 │   └── VoxelMaterialPallet.asset    # マテリアル設定
 ├── Scenes/                   # シーンファイル
-│   └── VoxelSampleScene.unity
+│   └── VoxelSample.unity
 └── Settings/                 # URP設定
 ```
 
@@ -146,6 +150,7 @@ Assets/
 - Unity Job SystemとBurst Compilerの活用
 - 共有マテリアルによるメモリ使用量削減
 - 必要時のみメッシュコライダー更新
+- ApplyBrushメソッドの最適化（99%の計算量削減）
 
 ## カスタマイズ
 
@@ -178,6 +183,8 @@ public const int ChunkSize = 32; // 16, 64などに変更可能
 | **パフォーマンスが低い** | チャンク数が多すぎる | VoxelWorld.viewRadiusを2以下に設定 |
 | **メモリ不足警告** | チャンクサイズが大きい | VoxelConst.ChunkSizeを16に変更 |
 | **UIが表示されない** | Canvas未作成 | VoxelGameUIが自動でCanvasを作成するまで待機 |
+| **ボクセルが掘れない** | Hit Point座標の境界問題 | 法線方向を考慮した座標調整で解決 |
+| **掘削が重い** | ApplyBrushの計算量過多 | ブラシ範囲の事前計算で最適化 |
 
 ### デバッグのヒント
 
